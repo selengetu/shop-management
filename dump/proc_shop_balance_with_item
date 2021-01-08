@@ -1,0 +1,88 @@
+CREATE DEFINER=`bananafr_josh`@`localhost` PROCEDURE `proc_shop_balance_with_item`(IN p_balance_id INT)
+BEGIN
+	-- jimstei uyed jimsee insert hiigeed duudna
+
+	DECLARE v_shop_id, v_to_shop_id, v_multiplier, v_balance_id_last, v_balance_type,
+			i, n, v_product_id, v_kg, v_bal_id, v_balance_id_2 INT DEFAULT 0;
+	DECLARE v_balance_c1, v_total_cost DOUBLE DEFAULT 0;
+    
+    SELECT `shop_balance`.`shop_id`, `shop_balance`.`to_shop_id`, `const_balance_type`.`multiplier`, `shop_balance`.`balance_type`
+    INTO v_shop_id, v_to_shop_id, v_multiplier, v_balance_type
+	FROM `banana`.`shop_balance`, `banana`.`const_balance_type`
+    WHERE `shop_balance`.`balance_id` = p_balance_id
+    AND `shop_balance`.`balance_type` = `const_balance_type`.`type_id`;
+    
+    SELECT COALESCE(MAX(`shop_balance`.`balance_id`),0)
+    INTO v_balance_id_last
+	FROM `banana`.`shop_balance`
+    WHERE `shop_balance`.`shop_id` = v_shop_id
+    AND `shop_balance`.`balance_id` < p_balance_id;
+    
+    SELECT CASE WHEN COUNT(`shop_balance`.`balance_c2`)>0 then `shop_balance`.`balance_c2` else 0 end 
+    INTO v_balance_c1
+    FROM `banana`.`shop_balance`
+    WHERE `shop_balance`.`balance_id` = v_balance_id_last;
+    
+    SELECT SUM(`shop_balance_item`.`price`) * v_multiplier
+    INTO v_total_cost
+	FROM `banana`.`shop_balance_item`
+    WHERE `shop_balance_item`.`balance_id` = p_balance_id;
+    
+    UPDATE `banana`.`shop_balance`
+	SET `balance_value` = v_total_cost,
+		`balance_c1` = v_balance_c1,
+		`balance_c2` = v_balance_c1+v_total_cost
+	WHERE `balance_id` = p_balance_id;
+    
+    
+    -- update PRODUCT BALANCE
+    
+    SELECT COUNT(`shop_balance_item`.`balance_id`)
+    INTO n
+	FROM `banana`.`shop_balance_item`
+	WHERE  `shop_balance_item`.`balance_id` = p_balance_id;
+    
+    WHILE i<n DO 
+		SELECT `shop_balance_item`.`product_id`, `shop_balance_item`.`kg` * v_multiplier
+        INTO v_product_id, v_kg
+		FROM `banana`.`shop_balance_item`
+		WHERE  `shop_balance_item`.`balance_id` = p_balance_id
+        LIMIT i,1;
+        
+        SELECT CASE WHEN COUNT(`shop_product_balance`.`bal_id`)>0 THEN max(`shop_product_balance`.`bal_id`) ELSE 0 END
+		INTO v_bal_id
+		FROM `banana`.`shop_product_balance`
+        WHERE `shop_product_balance`.`shop_id` = v_shop_id
+        AND `shop_product_balance`.`product_id` = v_product_id;
+
+		IF v_bal_id=0 THEN
+			INSERT INTO `banana`.`shop_product_balance` (`shop_id`,`product_id`,`balance`)
+			VALUES (v_shop_id, v_product_id, v_kg);
+        ELSE
+			UPDATE `banana`.`shop_product_balance`
+			SET `balance` = `balance` + v_kg
+			WHERE `bal_id` = v_bal_id;
+        END IF;
+
+		SET i = i + 1;
+	END WHILE;
+    
+    
+    -- AGUULAHIIN ZARLAGA TALIIG HIINE
+    
+    IF v_balance_type=1 AND v_to_shop_id>0 THEN
+		INSERT INTO `banana`.`shop_balance` (`shop_id`, `to_shop_id`, `balance_type`)
+		SELECT `shop_balance`.`to_shop_id`, `shop_balance`.`shop_id`, 2
+		FROM `banana`.`shop_balance`
+		WHERE `shop_balance`.`balance_id` = p_balance_id;
+        
+        SELECT LAST_INSERT_ID() INTO v_balance_id_2;
+        
+        INSERT INTO `banana`.`shop_balance_item` (`balance_id`, `product_id`, `box`, `kg`, `price`)
+		SELECT v_balance_id_2, `shop_balance_item`.`product_id`, `shop_balance_item`.`box`, `shop_balance_item`.`kg`, `shop_balance_item`.`price`
+		FROM `banana`.`shop_balance_item`
+        WHERE `shop_balance_item`.`balance_id` = p_balance_id;
+        
+        CALL `banana`.`proc_shop_balance`(v_balance_id_2);
+    END IF;
+END

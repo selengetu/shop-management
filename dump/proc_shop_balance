@@ -1,0 +1,30 @@
+CREATE DEFINER=`bananafr_josh`@`localhost` PROCEDURE `proc_shop_balance`(IN p_balance_id INT)
+BEGIN
+	-- jimsgui uyed balance_value -g hiigeed c1, c2-g bodno
+    
+	DECLARE v_shop_id, v_balance_id_last INT DEFAULT 0;
+	DECLARE v_balance_c1, v_total_cost DOUBLE DEFAULT 0;
+    
+	SELECT `shop_balance`.`shop_id`, `shop_balance`.`balance_value` * `const_balance_type`.`multiplier`
+    INTO v_shop_id, v_total_cost
+	FROM `banana`.`shop_balance`, `banana`.`const_balance_type`
+    WHERE `shop_balance`.`balance_id` = p_balance_id
+    AND `shop_balance`.`balance_type` = `const_balance_type`.`type_id`;
+    
+    SELECT COALESCE(MAX(`shop_balance`.`balance_id`),0)
+    INTO v_balance_id_last
+	FROM `banana`.`shop_balance`
+    WHERE `shop_balance`.`shop_id` = v_shop_id
+    AND `shop_balance`.`balance_id` < p_balance_id;
+    
+    SELECT CASE WHEN COUNT(`shop_balance`.`balance_c2`)>0 then `shop_balance`.`balance_c2` else 0 end 
+    INTO v_balance_c1
+    FROM `banana`.`shop_balance`
+    WHERE `shop_balance`.`balance_id` = v_balance_id_last;
+    
+    UPDATE `banana`.`shop_balance`
+	SET `balance_value` = v_total_cost,
+		`balance_c1` = v_balance_c1,
+		`balance_c2` = v_balance_c1+v_total_cost
+	WHERE `balance_id` = p_balance_id;
+END
