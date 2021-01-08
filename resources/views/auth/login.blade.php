@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4 register-sec">
-                <h2 class="text-center">Grocery Store</h2>
+                <h2 class="text-center">JM</h2>
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group">
@@ -45,9 +45,9 @@
     .register-block {
         background: #DE6262;
         /* fallback for old browsers */
-        background: -webkit-linear-gradient(to bottom, #fef7cd, #fef7cd);
+        background: -webkit-linear-gradient(to bottom, #0B2D58, #0B2D58);
         /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to bottom, #fef7cd, #fef7cd);
+        background: linear-gradient(to bottom, #0B2D58, #0B2D58);
         /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
         float: left;
         width: 100%;
