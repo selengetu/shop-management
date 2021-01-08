@@ -29,7 +29,7 @@
                                 <th></th>
                                 <th>Бүтээгдэхүүн</th>
                                 <th>Нэгж</th>
-                                <th>1 хайрцаган дахь<br> барааны жин</th>
+                               
                                 <th>Нэгж үнэ</th>
                                 <th>Борлуулах үнэ</th>
                                 <th>Тайлбар</th>
@@ -49,7 +49,7 @@
                                         {{ $product->name }}
                                     </td>
                                     <td>{{ $product->count_unit }}</td>
-                                    <td>{{ $product->count_in_box }} {{ $product->count_unit }}</td>
+                                   
                                     <td>{{ number_format($product->cost) }}</td>
                                     <td>{{ number_format($product->price) }}</td>
                                     <td>{{ $product->note }}</td>
@@ -76,7 +76,7 @@
                 <form method="post" action="{{ Route('store_product_main') }}" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Нэр</span>
@@ -87,25 +87,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-5">
-                                <div class="input-group" style="margin-bottom: 1rem;">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">1 хайрцаганд хэдэн кг</span>
-                                    </div>
-                                    <input type="number" class="form-control" name="mbox" id="mbox" maxlength="3" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group" style="margin-bottom: 1rem;">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Нэгж/үнэ</span>
-                                    </div>
-                                    <input type="number" class="form-control" name="mcost" id="mcost" maxlength="5" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Худалдах үнэ</span>
@@ -113,13 +95,17 @@
                                     <input type="number" class="form-control" name="mprice" id="mprice" maxlength="5" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="row">
+                          
+                          
+                            <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Нэгж</span>
                                     </div>
                                     <select class="custom-select" name="munit" id="munit" required>
-                                        <option value="кг" selected>Кг</option>
+                                      
                                         <option value="ш">Ширхэг</option>
                                     </select>
                                 </div>
@@ -127,7 +113,7 @@
 
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Зураг</span>

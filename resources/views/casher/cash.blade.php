@@ -65,7 +65,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-7" style="max-height: 81vh; overflow-y: auto;">
+                    <div class="col-9" style="max-height: 81vh; overflow-y: auto;">
                         <table class="table-bordered" style="font-size:13px; width:100%;" id="product_table">
                             <thead>
                                 <tr>
@@ -103,7 +103,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-5" style="text-align: center; margin:auto;">
+                    <div class="col-3" style="text-align: center; margin:auto;">
                         <h2 id="label_from">Агуулах 1-с</h2>
                         <h2 id="label_to">Нарны хороолол 1-р салбар-руу</h2>
                         <h2 id="grandtotal" style="font-weight: bold;">Нийт: 0₮</h2>
