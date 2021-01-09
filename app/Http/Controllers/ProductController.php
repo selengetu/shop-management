@@ -32,7 +32,6 @@ class ProductController extends Controller {
             `products`.`count_unit`,
             `products`.`thumb_url`,
             `products`.`note`,
-            `products`.`count_in_box`,
             `products`.`cost`,
             `products`.`price` FROM products   order by products.type, products.order_number');
         return view('accountant.product_main', compact('products'));
@@ -53,7 +52,6 @@ class ProductController extends Controller {
             `count_unit`,
             `thumb_url`,
             `note`,
-            `count_in_box`,
             `cost`,
             `price`)
             VALUES
@@ -83,7 +81,6 @@ class ProductController extends Controller {
                 count_unit = '$request->munit',
                 thumb_url = '$imagePath',
                  note = '$request->mnote',
-                `count_in_box` = '$request->mbox',
                 `cost` ='$request->mcost',
                 `price` = '$request->mprice'
                 WHERE `id` = $request->mid");
@@ -152,7 +149,6 @@ class ProductController extends Controller {
                 (mainid,
                 code,
                 size,
-                count_in_box,
                 count_in_bag,
                 cost,
                 price)
@@ -173,7 +169,6 @@ class ProductController extends Controller {
                 mainid = $request->imain,
                 code = '$request->icode',
                 size = '$request->isize',
-                count_in_box = '$request->ibox',
                 count_in_bag = '$request->ibag',
                 cost = '$request->icost',
                 price = '$request->iprice'
