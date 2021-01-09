@@ -23,7 +23,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 col-xs-12">
         <div class="card">
             <div class="card-header">
                 <div class="input-group">
@@ -65,7 +65,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-9" style="max-height: 81vh; overflow-y: auto;">
+                    <div class="col-7" style="max-height: 81vh; overflow-y: auto;">
                         <table class="table-bordered" style="font-size:13px; width:100%;" id="product_table">
                             <thead>
                                 <tr>
@@ -90,7 +90,7 @@
                                     </td>
                                     <td>
                                         <input type='number' id='weight_{{ $product->id }}' onKeyup='calcTotal({{ $product->id }})' min='0' value='0' style="margin-left: 1rem;"/>
-                                        {{ $product->unit }}/{{ $product->box }}{{ $product->unit }}
+                                        {{ $product->unit }}{{ $product->unit }}
                                     </td>
                                     <td style="text-align:center;">
                                         <input type='number' id='price_{{ $product->id }}' onKeyup='calcTotal({{ $product->id }})' min='0' value='{{ $product->price }}'/>₮
@@ -103,14 +103,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-3" style="text-align: center; margin:auto;">
-                        <h2 id="label_from">Агуулах 1-с</h2>
-                        <h2 id="label_to">Нарны хороолол 1-р салбар-руу</h2>
+                    <div class="col-5" style="text-align: center; margin:auto;">
+                        <p id="label_from">Агуулах 1-с</p>
+                        <p id="label_to">Нарны хороолол 1-р салбар-руу</h2>
                         <h2 id="grandtotal" style="font-weight: bold;">Нийт: 0₮</h2>
                         <h3 id="label_action">Бараа ШИЛЖҮҮЛЭХ гэж байна</h3>
                         <br>
-                        <button onclick="pushtoCatch()" class="btn btn-primary btn-lg">
-                            <i class="fa fa-save"></i> Баталгаажуулах / Хадгалах
+                        <button onclick="pushtoCatch()" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Хадгалах
                         </button>
                     </div>
                 </div>

@@ -25,7 +25,7 @@ class CashController extends Controller {
         foreach($shops as $shop) {
             $shop->shops = DB::select('SELECT shop_id AS shop, shop_name FROM shops where shop_type='.$shop->type.' and shop_state=1');
         }
-        $products = DB::select("SELECT p.id, p.name, p.count_unit unit, p.count_in_box box, p.price, p.thumb_url thumb
+        $products = DB::select("SELECT p.id, p.name, p.count_unit unit, p.price, p.thumb_url thumb
                                 FROM products p WHERE p.state=1 ORDER BY p.type, p.order_number");
         return view('casher.cash', compact('shops','products'));
     }
@@ -56,7 +56,7 @@ class CashController extends Controller {
         $balance_id = DB::getPdo()->lastInsertId();
         foreach($products as $product){
             DB::insert('INSERT INTO `shop_balance_item` (`balance_id`, `product_id`, `box`, `kg`, `price`, `total`)
-                        SELECT '.$balance_id.', `id`, '.$product->weight.'/`count_in_box`, '.$product->weight.', '.$product->price.', '.$product->weight.'*'.$product->price.' FROM products where id='.$product->pid);
+                        SELECT '.$balance_id.', `id`, '.$product->weight.', '.$product->weight.', '.$product->price.', '.$product->weight.'*'.$product->price.' FROM products where id='.$product->pid);
         }
         $total = DB::select('SELECT IFNULL(sum(b.total),0)*(select t.multiplier from const_balance_type t where t.type_id='.$balance_type.') total
                         FROM shop_balance_item b where b.balance_id='.$balance_id)[0]->total;
