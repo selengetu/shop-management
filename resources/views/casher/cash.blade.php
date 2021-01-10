@@ -33,7 +33,8 @@
                     <select id="action">
                         <option value="1">Бараа худалдан АВАХ</option>
                         <option value="2">Бараа ШИЛЖҮҮЛЭХ</option>
-                        <option value="3">ХОРОГДСОН бараа бүртгэх</option>
+                        <option value="3">Бараа БУЦААЛТ</option>
+                        <option value="4">Бараа ЗАРСАН</option>
                     </select>
                     <div class="input-group-prepend">
                         <label class="input-group-text">Огноо:</label>
