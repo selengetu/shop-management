@@ -106,7 +106,7 @@
                     </div>
                     <div class="col-5" style="text-align: center; margin:auto;">
                         <p id="label_from">Агуулах 1-с</p>
-                        <p id="label_to">Нарны хороолол 1-р салбар-руу</h2>
+                        <p id="label_to">Дэлгүүр 1-руу</h2>
                         <h2 id="grandtotal" style="font-weight: bold;">Нийт: 0₮</h2>
                         <h3 id="label_action">Бараа ШИЛЖҮҮЛЭХ гэж байна</h3>
                         <br>

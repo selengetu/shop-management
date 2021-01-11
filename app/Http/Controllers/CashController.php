@@ -56,11 +56,21 @@ class CashController extends Controller {
     function insertBalanceWithProduct($from_shop, $to_shop, $balance_type, $date, $note, $products) {
         DB::insert('INSERT INTO `shop_balance` (`from_shop_id`,`to_shop_id`,`balance_type`, `pay_type`, `balance_date`, `balance_note`)
                         VALUES ('.$from_shop.', '.$to_shop.', '.$balance_type.', 0, \''.$date.'\', \''.$note.'\')');
+  
         $balance_id = DB::getPdo()->lastInsertId();
+      
         foreach($products as $product){
             DB::insert('INSERT INTO `shop_balance_item` (`balance_id`, `product_id`, `box`, `kg`, `price`, `total`)
                         SELECT '.$balance_id.', `id`, '.$product->weight.', '.$product->weight.', '.$product->price.', '.$product->weight.'*'.$product->price.' FROM products where id='.$product->pid);
-        }
+
+         DB::insert('INSERT INTO `shop_product_balance` (`shop_id`,`product_id`,`balance_type`,`balance_id`)
+          VALUES ('.$to_shop.', '.$product->pid.', '.$balance_type.','.$balance_id.')');
+                    $bal_id = DB::getPdo()->lastInsertId();
+        $count = DB::select('SELECT IFNULL(sum(b.box),0)*(select t.multiplier from const_balance_type t where t.type_id='.$balance_type.') total
+              FROM shop_balance_item b where b.balance_id='.$balance_id.' and product_id ='.$product->pid)[0]->total;
+        DB::update('UPDATE shop_product_balance SET product_value='.$count.' WHERE bal_id='.$bal_id); 
+        $this->updateProduct($bal_id);
+    }
         $total = DB::select('SELECT IFNULL(sum(b.total),0)*(select t.multiplier from const_balance_type t where t.type_id='.$balance_type.') total
                         FROM shop_balance_item b where b.balance_id='.$balance_id)[0]->total;
         DB::update('UPDATE shop_balance SET balance_value='.$total.' WHERE balance_id='.$balance_id);
@@ -113,6 +123,27 @@ class CashController extends Controller {
             $this->calculateBalances($balances);
         }
     }
+    public function updateProduct($bal_id) {
+        $before = DB::select('SELECT max(b.bal_id) as bal_id, b.shop_id
+                                FROM shop_product_balance b, shop_product_balance s
+                                WHERE s.bal_id='.$bal_id.'
+                                AND b.shop_id=s.shop_id
+                                AND b.product_id=s.product_id
+                                AND b.bal_id<s.bal_id
+                                GROUP BY b.shop_id');
+        if(count($before)>0) {
+            $products = DB::select('SELECT bal_id id, product_c1 c1, product_value val, product_c2 c2
+                        FROM shop_product_balance WHERE shop_id='.$before[0]->shop_id.' AND bal_id='.$before[0]->bal_id.'');
+            $this->calculateProducts($products);
+        }
+        else {
+            $products = DB::select('SELECT b.bal_id id, b.product_c1 c1, b.product_value val, b.product_value c2
+                            FROM shop_product_balance b, shop_product_balance s
+                            WHERE s.bal_id='.$bal_id.' AND b.shop_id=s.shop_id  AND b.product_id=s.product_id');
+
+            $this->calculateProducts($products);
+        }
+    }
     function calculateBalances($balances) {
         $c1 = 0;
         $c2 = 0;
@@ -127,7 +158,20 @@ class CashController extends Controller {
             DB::update('UPDATE shop_balance SET balance_c1 = '.$c1.',balance_c2='.$c2.' WHERE balance_id='.$balance->id);
         }
     }
-
+    function calculateProducts($products) {
+        $c1 = 0;
+        $c2 = 0;
+        foreach($products as $i=>$product) {
+            if($i==0) {
+                $c1 = $product->c1;
+            }
+            else {
+                $c1 = $c2;
+            }
+            $c2 = $c1+$product->val;
+            DB::update('UPDATE shop_product_balance SET product_c1 = '.$c1.',product_c2='.$c2.' WHERE bal_id='.$product->id);
+        }
+    }
     public function showBalance($shop_id) {
             return DB::select("SELECT * FROM v_shop_balance where to_shop_id = $shop_id order by balance_date desc");
     }
@@ -141,37 +185,6 @@ class CashController extends Controller {
         $request->session()->put('orderid', $id);
         return redirect('cash');
     }
-    public function updateOrder(Request $request) {
-        DB::update("UPDATE orders SET company=$request->company, customer=$request->customer WHERE id=$request->id");
-        return redirect('cash');
-    }
-    public function delOrder(Request $request, $order) {
-        DB::delete("DELETE FROM order_fee WHERE orderid=$order");
-        DB::delete("DELETE FROM orders WHERE id=$order");
-        $request->session()->forget('orderid');
-        return redirect('cash');
-    }
-
-    public function addToOrder($order, $id) {
-        DB::select("select add_fee_to_order($order, $id)");
-        return redirect('cash');
-    }
-
-    public function updateFeeCount(Request $request) {
-        DB::update("UPDATE order_fee SET count=$request->count, total=price*count WHERE id=$request->id");
-        return redirect('cash');
-    }
-
-    public function addPayment(Request $request) {
-        $result = DB::select("select add_payment($request->id, $request->paytype, $request->value) as result");
-        if(sizeof($result)>0) {
-            if($result[0]->result != 'ok') {
-                Session::flash('error', $result[0]->result);
-            }
-        }
-        return redirect('cash');
-    }
-
 
     // Report Section
     public function priceList() {
