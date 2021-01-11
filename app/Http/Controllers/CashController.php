@@ -45,6 +45,9 @@ class CashController extends Controller {
                 case 3:
                     $this->insertBalanceWithProduct(0, $json->to_shop, 3, $json->date, $json->note, $products);
                     break;
+                    case 4:
+                        $this->insertBalanceWithProduct(0, $json->to_shop, 4, $json->date, $json->note, $products);
+                        break;
                 default:
                     break;
             }

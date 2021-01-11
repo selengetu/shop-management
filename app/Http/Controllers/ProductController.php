@@ -60,7 +60,6 @@ class ProductController extends Controller {
             '$request->munit',
             IF(LENGTH('$imagePath')=0,NULL,'$imagePath'),
             '$request->mnote',
-            '$request->mbox',
             '$request->mcost',
             '$request->mprice') ");
         }

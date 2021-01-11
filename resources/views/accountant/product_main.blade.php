@@ -76,7 +76,7 @@
                 <form method="post" action="{{ Route('store_product_main') }}" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Нэр</span>
@@ -87,6 +87,9 @@
                                     </div>
                                 </div>
                             </div>
+                           
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
@@ -95,9 +98,14 @@
                                     <input type="number" class="form-control" name="mprice" id="mprice" maxlength="5" required>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                          
+                            <div class="col-md-6">
+                                <div class="input-group" style="margin-bottom: 1rem;">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Өртөгийн үнэ</span>
+                                    </div>
+                                    <input type="number" class="form-control" name="mcost" id="mcost" maxlength="5" required>
+                                </div>
+                            </div>
                           
                             <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
@@ -111,8 +119,6 @@
                                 </div>
                             </div>
 
-                        </div>
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
@@ -121,7 +127,7 @@
                                     <input type="file" class="form-control" name="mimage" id="mimage" accept="image/*" onchange="console.log(this.files[0].path);">
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="input-group" style="margin-bottom: 1rem;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Тайлбар</span>
