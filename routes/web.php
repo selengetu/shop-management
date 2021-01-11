@@ -85,7 +85,8 @@ Route::group(['middleware' => ['auth', 'casher']], function () {
     Route::get('getbalance/{id1}/{id2}/{shop_id}', 'CashController@getbalance');
     Route::get('getbalanceDetail/{id1}/{id2}/{type_id}/{shopid}', 'CashController@getbalanceDetail');
     Route::get('balancereport', 'CashController@balancereport')->name('balancereport');
-
+    Route::get('updateProduct/{balance_id}', 'CashController@updateProduct')->name('updateProduct');
+    Route::get('calculateBalances/{balance_id}', 'CashController@calculateBalances')->name('calculateBalances');
 
     // Print Routes
     Route::get('print_zp/{orderid}', 'PrintController@ZarlagiinPadaan')->name('print_zp');

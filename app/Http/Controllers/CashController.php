@@ -69,7 +69,7 @@ class CashController extends Controller {
         $count = DB::select('SELECT IFNULL(sum(b.box),0)*(select t.multiplier from const_balance_type t where t.type_id='.$balance_type.') total
               FROM shop_balance_item b where b.balance_id='.$balance_id.' and product_id ='.$product->pid)[0]->total;
         DB::update('UPDATE shop_product_balance SET product_value='.$count.' WHERE bal_id='.$bal_id); 
-        $this->updateProduct($bal_id);
+      
     }
         $total = DB::select('SELECT IFNULL(sum(b.total),0)*(select t.multiplier from const_balance_type t where t.type_id='.$balance_type.') total
                         FROM shop_balance_item b where b.balance_id='.$balance_id)[0]->total;
@@ -111,6 +111,7 @@ class CashController extends Controller {
                         AND b.balance_date<=s.balance_date
                         AND b.balance_id<s.balance_id
                         GROUP BY b.to_shop_id');
+              
         if(count($before)>0) {
             $balances = DB::select('SELECT balance_id id, balance_c1 c1, balance_value val, balance_c2 c2
                         FROM shop_balance WHERE to_shop_id='.$before[0]->to_shop_id.' AND balance_id>='.$before[0]->id.' ORDER BY balance_date, balance_id');
@@ -121,6 +122,7 @@ class CashController extends Controller {
                             FROM shop_balance b, shop_balance s
                             WHERE s.balance_id='.$balance_id.' AND b.to_shop_id=s.to_shop_id AND b.balance_date>=s.balance_date
                             ORDER BY b.balance_date, b.balance_id');
+                           
             $this->calculateBalances($balances);
         }
     }
@@ -132,17 +134,34 @@ class CashController extends Controller {
                                 AND b.product_id=s.product_id
                                 AND b.bal_id<s.bal_id
                                 GROUP BY b.shop_id');
+                       
         if(count($b1)>0) {
             $products = DB::select('SELECT bal_id id, product_c1 c1, product_value val, product_c2 c2
                         FROM shop_product_balance WHERE shop_id='.$b1[0]->shop_id.' AND bal_id='.$b1[0]->bal_id.'');
-            $this->calculateProducts($products);
+                   calculateProducts($products);
         }
         else {
             $products = DB::select('SELECT b.bal_id id, b.product_c1 c1, b.product_value val, b.product_c2 c2
                             FROM shop_product_balance b, shop_product_balance s
                             WHERE s.bal_id='.$bal_id.' AND b.shop_id=s.shop_id  AND b.product_id=s.product_id');
-
-            $this->calculateProducts($products);
+            calculateProducts($products);
+        }
+     
+    }
+    function calculateProducts($products) {
+        $c1 = 0;
+        $c2 = 0;
+        foreach($products as $i=>$product) {
+            if($i==0) {
+                $c1 = $product->c1;
+              
+            }
+            else {
+                $c1 = $c2;
+               
+            }
+            $c2 = $c1+$product->val;
+            DB::update('UPDATE shop_product_balance SET product_c1 = '.$c1.',product_c2='.$c2.' WHERE bal_id='.$product->id);
         }
     }
     function calculateBalances($balances) {
@@ -159,20 +178,7 @@ class CashController extends Controller {
             DB::update('UPDATE shop_balance SET balance_c1 = '.$c1.',balance_c2='.$c2.' WHERE balance_id='.$balance->id);
         }
     }
-    function calculateProducts($products) {
-        $c1 = 0;
-        $c2 = 0;
-        foreach($products as $i=>$product) {
-            if($i==0) {
-                $c1 = $product->c1;
-            }
-            else {
-                $c1 = $c2;
-            }
-            $c2 = $c1+$product->val;
-            DB::update('UPDATE shop_product_balance SET product_c1 = '.$c1.',product_c2='.$c2.' WHERE bal_id='.$product->id);
-        }
-    }
+  
     public function showBalance($shop_id) {
             return DB::select("SELECT * FROM v_shop_balance where to_shop_id = $shop_id order by balance_date desc");
     }
