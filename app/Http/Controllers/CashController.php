@@ -94,6 +94,7 @@ class CashController extends Controller {
                         GROUP BY b.to_shop_id');
         DB::delete("delete FROM shop_balance_item where balance_id = $balance_id");
         DB::delete("delete FROM shop_balance where balance_id = $balance_id");
+        DB::delete("delete FROM shop_product_balance where balance_id = $balance_id");
         if(count($before)>0) {
             $balances = DB::select('SELECT balance_id id, balance_c1 c1, balance_value val, balance_c2 c2
                         FROM shop_balance WHERE to_shop_id='.$before[0]->to_shop_id.' AND balance_id>='.$before[0]->id.' ORDER BY balance_date, balance_id');
@@ -124,20 +125,20 @@ class CashController extends Controller {
         }
     }
     public function updateProduct($bal_id) {
-        $before = DB::select('SELECT max(b.bal_id) as bal_id, b.shop_id
+        $b1 = DB::select('SELECT max(b.bal_id) as bal_id, b.shop_id
                                 FROM shop_product_balance b, shop_product_balance s
                                 WHERE s.bal_id='.$bal_id.'
                                 AND b.shop_id=s.shop_id
                                 AND b.product_id=s.product_id
                                 AND b.bal_id<s.bal_id
                                 GROUP BY b.shop_id');
-        if(count($before)>0) {
+        if(count($b1)>0) {
             $products = DB::select('SELECT bal_id id, product_c1 c1, product_value val, product_c2 c2
-                        FROM shop_product_balance WHERE shop_id='.$before[0]->shop_id.' AND bal_id='.$before[0]->bal_id.'');
+                        FROM shop_product_balance WHERE shop_id='.$b1[0]->shop_id.' AND bal_id='.$b1[0]->bal_id.'');
             $this->calculateProducts($products);
         }
         else {
-            $products = DB::select('SELECT b.bal_id id, b.product_c1 c1, b.product_value val, b.product_value c2
+            $products = DB::select('SELECT b.bal_id id, b.product_c1 c1, b.product_value val, b.product_c2 c2
                             FROM shop_product_balance b, shop_product_balance s
                             WHERE s.bal_id='.$bal_id.' AND b.shop_id=s.shop_id  AND b.product_id=s.product_id');
 
