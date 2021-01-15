@@ -128,27 +128,27 @@ class CashController extends Controller {
         }
     }
     public function updateProduct($bal_id) {
-        $before = DB::select('SELECT max(b.bal_id) id, b.shop_id
+        $before = DB::select('SELECT max(b.bal_id) id, b.shop_id, b.product_id
         FROM shop_product_balance b, shop_product_balance s
         WHERE s.bal_id='.$bal_id.'
         AND b.shop_id=s.shop_id
         AND b.product_id=s.product_id
         AND b.balance_date<=s.balance_date
         AND b.bal_id<s.bal_id
-        GROUP BY b.shop_id');
+        GROUP BY b.shop_id, b.product_id');
 
-            if(count($before)>0) {
-            $products = DB::select('SELECT bal_id id, product_c1 c1, product_value val, product_c2 c2
-                    FROM shop_product_balance WHERE shop_id='.$before[0]->shop_id.' AND bal_id>='.$before[0]->id.' ORDER BY balance_id');
+        if(count($before)>0) {
+            $products = DB::select('SELECT bal_id id, product_id product_id, product_c1 c1, product_value val, product_c2 c2
+                    FROM shop_product_balance WHERE product_id='.$before[0]->product_id.'  and shop_id='.$before[0]->shop_id.' AND bal_id>='.$before[0]->id.' ORDER BY balance_id');
             $this->calculateProducts($products);
         }
-            else {
-            $products = DB::select('SELECT b.bal_id id, b.product_c1 c1, b.product_value val, b.product_c2 c2
+        else {
+            $products = DB::select('SELECT b.bal_id id, b.product_id product_id, b.product_c1 c1, b.product_value val, b.product_c2 c2
             FROM shop_product_balance b, shop_product_balance s
-            WHERE s.bal_id='.$bal_id.' AND b.shop_id=s.shop_id AND b.balance_date>=s.balance_date
+            WHERE s.bal_id='.$bal_id.' AND b.shop_id=s.shop_id AND b.balance_date>=s.balance_date and s.product_id=b.product_id
             ORDER BY b.bal_id');
-           $this->calculateProducts($products);
-}
+            $this->calculateProducts($products);
+        }
     }
     function calculateProducts($products) {
         $c1 = 0;
@@ -161,7 +161,7 @@ class CashController extends Controller {
                 $c1 = $c2;
             }
             $c2 = $c1+$product->val;
-            DB::update('UPDATE shop_product_balance SET product_c1 = '.$c1.',product_c2='.$c2.' WHERE bal_id='.$product->id);
+            DB::update('UPDATE shop_product_balance SET product_c1 = '.$c1.',product_c2='.$c2.' WHERE bal_id='.$product->id.' and product_id='.$product->product_id.'');
         }
     }
     function calculateBalances($balances) {
