@@ -215,7 +215,34 @@ class CashController extends Controller {
         $const_balance_type = DB::select('SELECT type_id,type_name FROM const_balance_type where type_id in (5,6,7,8,9)');
         return view('casher.cashreport', compact('shops','const_balance_type','const_pay_type','const_balance_type'));
     }
-
+    public function productreport_sel($shop_id) {
+        Session::put('sel_shopid', $shop_id);
+        return redirect('productreport');
+    }
+    public function productreport_prod($product_id) {
+        Session::put('sel_product_id', $product_id);
+        return redirect('productreport');
+    }
+    public function productReport(Request $request) {
+        if(Session::has('sel_shopid')) {
+            $shop_id=Session::get('sel_shopid');
+            $qry="";
+        }
+        if(Session::has('sel_product_id')) {
+            $product_id=Session::get('sel_product_id');
+            $qry="";
+        }
+        $shops = DB::select('SELECT shop_id,shop_name,t.type_name,t.type_id FROM shops s, const_shop_type t
+                                    where shop_state=1
+                                    and s.shop_type=t.type_id order by type_id');
+        $shops = DB::select('SELECT id,name,t.type_name,t.count_unit,cost, price FROM shops s, const_shop_type t
+                                    where shop_state=1
+                                    and s.shop_type=t.type_id order by type_id');                             
+        $const_balance_type = DB::select('SELECT * FROM const_balance_type where type_id<>4');
+        $const_pay_type = DB::select('SELECT id,name FROM const_pay_type where id>0');
+        $const_balance_type = DB::select('SELECT type_id,type_name FROM const_balance_type where type_id in (5,6,7,8,9)');
+        return view('casher.productreport', compact('shops','const_balance_type','const_pay_type','const_balance_type'));
+    }
 
 
     /* Income
